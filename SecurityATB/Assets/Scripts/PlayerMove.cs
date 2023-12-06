@@ -13,13 +13,17 @@ public class PlayerMove : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();    
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        {
+            return;
+        }
+
         direction.x = Input.GetAxisRaw("Horizontal");
         direction.y = Input.GetAxisRaw("Vertical");
     }
-
-    private void Update()
+    private void FixedUpdate()
     {
         rb2d.MovePosition(rb2d.position + direction * speed * Time.fixedDeltaTime);
     }
