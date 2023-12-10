@@ -89,6 +89,10 @@ public class NPC : MonoBehaviour
                 canMove = true;
                 visualCue.SetActive(false);
             }
+            else if(dialogueManager.dialogueText.text == "\"Client run away\"")
+            {
+                
+            }
         }
         
         position = transform.position;
