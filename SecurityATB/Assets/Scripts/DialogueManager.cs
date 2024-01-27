@@ -12,6 +12,7 @@ public class DialogueManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
     public bool dialogueIsPlaying;
+    public bool plus5;
     private Story currentStory;
 
     public GameObject[] choices;
@@ -58,6 +59,7 @@ public class DialogueManager : MonoBehaviour
     {
         currentStory = new Story(InkJSON.text);
         dialogueIsPlaying = true;
+        plus5 = true;
         dialoguePanel.SetActive(true);
         dialogueText.text = currentStory.Continue();
         foreach(GameObject choice in choices)
@@ -71,7 +73,6 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
-        dialogueText.text = "";
     }
 
     public void ContinueStory()
@@ -83,6 +84,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
+            dialogueText.text = "";
             StartCoroutine(ExitDialogueMode());
         }
     }

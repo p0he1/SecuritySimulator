@@ -9,6 +9,7 @@ TagManager:
   - Canvas
   - bushes
   - thief
+  - moneyCounter
   layers:
   - Default
   - TransparentFX

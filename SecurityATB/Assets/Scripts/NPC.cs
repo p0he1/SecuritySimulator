@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NPC : MonoBehaviour
 {
@@ -18,16 +19,18 @@ public class NPC : MonoBehaviour
     public bool canTimer;
     private SpriteRenderer spriteRenderer;
 
-    public bool dialogue;
+    public bool dialogueJustNow;
     public bool playerInRange;
     public TextAsset inkJSON;
     private DialogueManager dialogueManager;
+    private moneyCounter moneyCount;
 
     private void Start()
     {
-        chanseForRobber = UnityEngine.Random.Range(4, 8 + 1);
+        chanseForRobber = UnityEngine.Random.Range(7, 8 + 1);
         spriteRenderer = GetComponent<SpriteRenderer>();
         dialogueManager = GameObject.FindGameObjectWithTag("Canvas").GetComponent<DialogueManager>();
+        moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
 
         stopTimer = 0.7f;
         spriteRenderer.color = chanseForRobber == 8 ? Color.red : Color.green;
@@ -50,6 +53,7 @@ public class NPC : MonoBehaviour
         if (playerInRange && !DialogueManager.GetInstance().dialogueIsPlaying)
         {
             visualCue.SetActive(true);
+            dialogueJustNow = true;
             if (Input.GetKeyDown(KeyCode.E))
             {
                 DialogueManager.GetInstance().EnterDialogueMode(inkJSON);
@@ -67,9 +71,9 @@ public class NPC : MonoBehaviour
             canMove = false;
         }
 
-        if (chanseForRobber == 8)
+        if (chanseForRobber == 8 && dialogueJustNow)
         {
-            if (dialogueManager.dialogueText.text == "You: Okay, you can go, just don't forget anything in your pockets/backpack anymore")
+            if (dialogueManager.dialogueText.text == "You: Okay, you can go, just don't forget anything in your pockets/backpack anymore" && position != points[points.Length - 1])
             {
                 dialogueManager.dialogueIsPlaying = false;
                 dialogueManager.dialoguePanel.SetActive(false);
@@ -78,6 +82,8 @@ public class NPC : MonoBehaviour
                 stopTimer = 1;
                 canMove = true;
                 visualCue.SetActive(false);
+                dialogueJustNow = false;
+                dialogueManager.dialogueText.text = "";
             }
             else if (dialogueManager.dialogueText.text == "You: I still have to call the police")
             {
@@ -88,10 +94,14 @@ public class NPC : MonoBehaviour
                 stopTimer = 1;
                 canMove = true;
                 visualCue.SetActive(false);
+                dialogueJustNow = false;
+                dialogueManager.dialogueText.text = "";
             }
             else if(dialogueManager.dialogueText.text == "\"Client run away\"")
             {
-                
+                PlayerPrefs.SetInt("money", moneyCount.numberUAH);
+                PlayerMove.player.SavePlayer();
+                SceneManager.LoadScene(1);
             }
         }
         

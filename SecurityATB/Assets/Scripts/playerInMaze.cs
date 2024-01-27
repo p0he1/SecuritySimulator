@@ -7,13 +7,14 @@ public class playerInMaze : MonoBehaviour
     public int playerSpeed;
     public bool flewInBushes;
     public bool isCoughtUp;
-    private bool canMove;
+    public bool canMove;
+    public bool plusFive;
 
     private void Start()
     {
         flewInBushes = false;
         isCoughtUp = false;
-        canMove = true;
+        canMove = false;
     }
 
     private void Update()
@@ -35,6 +36,8 @@ public class playerInMaze : MonoBehaviour
         if(collision.gameObject.tag == "thief")
         {
             isCoughtUp = true;
+            plusFive = true;
+            PlayerMove.player.IsPlayerOvertakeThief = true;
         }
     }
 }

@@ -19,7 +19,8 @@ public class PlayerMove : MonoBehaviour
 
     private void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();    
+        rb2d = GetComponent<Rigidbody2D>();
+        LoadPlayer();
     }
 
     private void Update()
@@ -29,13 +30,9 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        if(Input.GetKeyDown(KeyCode.F7))
+        if(IsPlayerOvertakeThief)
         {
-            SavePlayer();
-        }
-        if(Input.GetKeyDown(KeyCode.F6))
-        {
-            LoadPlayer();
+            Debug.Log("p");
         }
 
         direction.x = Input.GetAxisRaw("Horizontal");
@@ -48,16 +45,13 @@ public class PlayerMove : MonoBehaviour
 
     public void SavePlayer ()
     {
-        SaveManager.SavePlayer(this);
+        PlayerPrefs.SetFloat("x", transform.position.x);
+        PlayerPrefs.SetFloat("y", transform.position.y);
+        PlayerPrefs.SetFloat("z", transform.position.z);
     }
 
     public void LoadPlayer()
     {
-        PlayerData data = SaveManager.LoadPlayer();
-        Vector3 position;
-        position.x = data.playerPosition[0];
-        position.y = data.playerPosition[1];
-        position.z = data.playerPosition[2];
-        transform.position = position;
+        transform.position = new Vector3(PlayerPrefs.GetFloat("x"), PlayerPrefs.GetFloat("y"), PlayerPrefs.GetFloat("z"));
     }
 }

@@ -16,13 +16,23 @@ public class Maze : MonoBehaviour
     public TextMeshProUGUI conclusionText;
     public GameObject dialoguePanel;
 
+    public bool startOfGame;
+    public Button startButton;
+    public int money;
+
     private void Start()
     {
         canMove = true;
+        money = PlayerPrefs.GetInt("money");
     }
 
     private void Update()
     {
+        if(!startOfGame)
+        {
+            return;
+        }
+
         Vector2 position = transform.position;
         if (i < currentPositions.Length)
         {
@@ -47,12 +57,23 @@ public class Maze : MonoBehaviour
             else if(playerInMaze.isCoughtUp == true)
             {
                 conclusionText.text = "You cought!";
+                PlayerPrefs.SetInt("money", money + 5);
             }
         }
     }
 
     public void backButton()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(0);
+    }
+
+    public void StartOfGame()
+    {
+        if(!startOfGame)
+        {
+            startOfGame = true;
+            playerInMaze.canMove = true;
+            startButton.gameObject.SetActive(false);
+        }
     }
 }
