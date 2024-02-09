@@ -37,7 +37,6 @@ public class playerInMaze : MonoBehaviour
         {
             isCoughtUp = true;
             plusFive = true;
-            PlayerMove.player.IsPlayerOvertakeThief = true;
         }
     }
 }

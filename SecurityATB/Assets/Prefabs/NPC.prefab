@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f05f3b9d6c8bf57418d03f11e03f2d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  typeOfClient: 0
   visualCue: {fileID: 757092440176660228}
   speed: 0.05
   points:
@@ -239,10 +240,15 @@ MonoBehaviour:
   - {x: 0, y: -3.45}
   - {x: 0, y: -7.47}
   chanseForRobber: 0
+  chanseForRobberWithIlligalSubst: 0
+  chanseForRobberOnCams: 0
   canMove: 1
   stopTimer: 0
   canTimer: 0
-  dialogue: 0
+  dialogueJustNow: 0
   playerInRange: 0
-  inkJSON: {fileID: 4900000, guid: f14ef05c5aec89f4dac48cb03bda032e, type: 3}
-  dialogueManager: {fileID: 0}
+  dialogueWithOrdinaryThief: {fileID: 4900000, guid: f14ef05c5aec89f4dac48cb03bda032e, type: 3}
+  dialogueWithUser: {fileID: 4900000, guid: 2a748804b30e3c3498690069b130433c, type: 3}
+  userDialogAndPolice: {fileID: 4900000, guid: fd6804770aca5394b9b9e15586652f3b, type: 3}
+  userDialogWihoutPolice: {fileID: 4900000, guid: a33623cca174e98449cde104c418e47c, type: 3}
+  dialWithThiefOnCams: {fileID: 4900000, guid: c03b500ba7f8f4f4db6723f4f302dee0, type: 3}

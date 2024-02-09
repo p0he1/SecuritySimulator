@@ -10,8 +10,6 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody2D rb2d;
     private Vector2 direction;
 
-    public bool IsPlayerOvertakeThief;
-
     private void Awake()
     {
         player = this;
@@ -28,11 +26,6 @@ public class PlayerMove : MonoBehaviour
         if (DialogueManager.GetInstance().dialogueIsPlaying)
         {
             return;
-        }
-
-        if(IsPlayerOvertakeThief)
-        {
-            Debug.Log("p");
         }
 
         direction.x = Input.GetAxisRaw("Horizontal");

@@ -38,11 +38,17 @@ public class Skill : MonoBehaviour
         {
             PlayerPrefs.SetInt($"level_{i}", skillTree.skillsLevel[i]);
         };
+
+        for (int i = 0; i < skillTree.skillsPrice.Length; i++)
+        {
+            PlayerPrefs.SetInt($"price_{i}", skillTree.skillsPrice[i]);
+        };
     }
 
     public void Buy()
     {
-        if (skillTree.skillsPrice[id] == skillTree.skillsLevel[id] || MoneyCounter.numberUAH <= skillTree.skillsPrice[id]) return;
+        if (skillTree.skillsPrice[id] == skillTree.skillsLevel[id] || 
+            MoneyCounter.numberUAH <= skillTree.skillsPrice[id]) return;
         skillTree.skillsLevel[id] = skillTree.skillsPrice[id];
         MoneyCounter.numberUAH -= skillTree.skillsPrice[id];
         skillTree.UpdateAllSkillsUI();

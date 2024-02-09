@@ -10,6 +10,9 @@ TagManager:
   - bushes
   - thief
   - moneyCounter
+  - Dog Trigger
+  - SkillPanel
+  - Minigame Manager
   layers:
   - Default
   - TransparentFX
