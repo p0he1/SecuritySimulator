@@ -19,9 +19,10 @@ public class MiniGames : MonoBehaviour
     public GameObject radioVisalCue;
     public GameObject warningPanel;
     public Image jacketColor;
+    //public Queue<GameObject> waitQueue = new Queue<GameObject>();
 
     private void Start()
-    {
+    { 
         warningPanel.SetActive(false);
         if (PlayerPrefs.GetInt("isWithPolice", 0) != 0)
         {

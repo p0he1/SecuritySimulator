@@ -13,6 +13,7 @@ TagManager:
   - Dog Trigger
   - SkillPanel
   - Minigame Manager
+  - Queue Manager
   layers:
   - Default
   - TransparentFX

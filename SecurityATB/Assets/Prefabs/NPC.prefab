@@ -233,18 +233,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeOfClient: 0
   visualCue: {fileID: 757092440176660228}
+  howWalking: 0
   speed: 0.05
-  points:
-  - {x: -1.28, y: 3.01}
-  - {x: -1.28, y: -1}
-  - {x: 0, y: -3.45}
-  - {x: 0, y: -7.47}
+  stopOrNotStop: 0
+  cr1or2: 0
+  firstPoints:
+  - {x: -2.12, y: 3.83}
+  - {x: -2.12, y: -0.16}
+  - {x: -2.12, y: -1.15}
+  - {x: 0, y: -3.24}
+  - {x: 0, y: -7.79}
+  secondPoints:
+  - {x: 1.1, y: 3.83}
+  - {x: 1.1, y: -0.16}
+  - {x: 1.1, y: -1.15}
+  - {x: 0, y: -3.24}
+  - {x: 0, y: -7.79}
+  exits:
+  - {x: -2.55, y: -3.24}
+  - {x: 0, y: -3.24}
+  - {x: 2.71, y: -3.24}
+  stopTimerCR: 0
+  canTimerCR: 0
   chanseForRobber: 0
   chanseForRobberWithIlligalSubst: 0
   chanseForRobberOnCams: 0
   canMove: 1
-  stopTimer: 0
-  canTimer: 0
   dialogueJustNow: 0
   playerInRange: 0
   dialogueWithOrdinaryThief: {fileID: 4900000, guid: f14ef05c5aec89f4dac48cb03bda032e, type: 3}
@@ -252,3 +266,7 @@ MonoBehaviour:
   userDialogAndPolice: {fileID: 4900000, guid: fd6804770aca5394b9b9e15586652f3b, type: 3}
   userDialogWihoutPolice: {fileID: 4900000, guid: a33623cca174e98449cde104c418e47c, type: 3}
   dialWithThiefOnCams: {fileID: 4900000, guid: c03b500ba7f8f4f4db6723f4f302dee0, type: 3}
+  miniGames: {fileID: 0}
+  queueManager: {fileID: 0}
+  onceInQueue: 0
+  orderInQueue: 0
