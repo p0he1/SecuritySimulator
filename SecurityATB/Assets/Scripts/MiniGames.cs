@@ -19,14 +19,47 @@ public class MiniGames : MonoBehaviour
     public GameObject radioVisalCue;
     public GameObject warningPanel;
     public Image jacketColor;
-    //public Queue<GameObject> waitQueue = new Queue<GameObject>();
+
+    public Vector2 lastPointFirstQueue = new Vector2(-2.12f, 2.8f);
+    public Vector2 lastPointSecondQueue = new Vector2(1.1f, 2.8f);
+
+    public GameObject cashier1;
+    public GameObject cashier2;
+    public float frequencyOfCashierAlarm;
+    private bool constForRandom;
+    private int randomInt;
+    public float cashierAlarmTimer;
+    private const int maxAlarmTimer = 4;
+    public GameObject[] timersFill;
+    public GameObject[] emptysToLocateTimers;
+    //second alarm needs only for sprite
+    public GameObject stopAlarmButton;
+
+    private moneyCounter MoneyCounter;
 
     private void Start()
-    { 
+    {
+        MoneyCounter = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
+        foreach (GameObject clock in timersFill) clock.SetActive(false);
+        constForRandom = true;
         warningPanel.SetActive(false);
+        frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
+        cashierAlarmTimer = 4;
         if (PlayerPrefs.GetInt("isWithPolice", 0) != 0)
         {
             GameObject newNPC = Instantiate(NPC, spawnForUser, Quaternion.identity, null);
+            PlayerMove.player.transform.position = new Vector2(spawnForUser.x+1, spawnForUser.y);
+        }
+        if (PlayerPrefs.GetInt("isCardThief", 0) != 0)
+        {
+            if(PlayerPrefs.GetInt("1or2queue", 0) == 1)
+            {
+                GameObject newNPC = Instantiate(NPC, lastPointFirstQueue, Quaternion.identity, null);
+            }
+            else if(PlayerPrefs.GetInt("1or2queue", 0) == 2)
+            {
+                GameObject newNPC = Instantiate(NPC, lastPointSecondQueue, Quaternion.identity, null);
+            }
         }
         newTimer = true;
         radio.SetActive(PlayerPrefs.GetInt("level_5", 0) == PlayerPrefs.GetInt("price_5", 1));
@@ -35,6 +68,7 @@ public class MiniGames : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //===thief from cameras==
         if (newTimer)
         {
             timer = UnityEngine.Random.Range(2, 3);
@@ -50,6 +84,36 @@ public class MiniGames : MonoBehaviour
         }
         if(warningThiefOnCams) radioVisalCue.SetActive(true);
         else radioVisalCue.SetActive(false);
+        //=======================
+
+        //==cash alarm===========
+        frequencyOfCashierAlarm -= Time.deltaTime;
+        if(frequencyOfCashierAlarm<=0)
+        {
+            if (constForRandom)
+            {
+                randomInt = UnityEngine.Random.Range(0, 1 + 1);
+                constForRandom = false;
+                
+            }
+            timersFill[randomInt].SetActive(true);
+            timersFill[randomInt].GetComponent<Image>().fillAmount = cashierAlarmTimer / maxAlarmTimer;
+            cashierAlarmTimer -= Time.deltaTime;
+            
+            if(Vector2.Distance(PlayerMove.player.transform.position, emptysToLocateTimers[randomInt].transform.position) <= 1 && cashierAlarmTimer > 0)
+            {
+                stopAlarmButton.SetActive(true);
+            }
+            else if(cashierAlarmTimer <= 0)
+            {
+                timersFill[randomInt].SetActive(false);
+                stopAlarmButton.SetActive(false);
+                frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
+                cashierAlarmTimer = 4;
+                constForRandom = true;
+            }
+        }
+        //=======================
     }
 
     public void timerOn()
@@ -72,5 +136,17 @@ public class MiniGames : MonoBehaviour
     {
         radio.SetActive(PlayerPrefs.GetInt("level_5", 0) == PlayerPrefs.GetInt("price_5", 1));
         dog.SetActive(PlayerPrefs.GetInt("level_2", 0) == PlayerPrefs.GetInt("price_2", 1));
+    }
+
+    public void StopAlarmBut()
+    {
+        MoneyCounter.numberUAH += 5;        
+        frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
+        cashierAlarmTimer = 4;
+        constForRandom = true;
+        //gameObject.GetComponent<Image>().sprite =
+        stopAlarmButton.GetComponent<Animator>().Play("off");
+        stopAlarmButton.SetActive(false);
+        timersFill[randomInt].SetActive(false);
     }
 }

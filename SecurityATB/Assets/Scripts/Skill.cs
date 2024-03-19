@@ -48,7 +48,7 @@ public class Skill : MonoBehaviour
     public void Buy()
     {
         if (skillTree.skillsPrice[id] == skillTree.skillsLevel[id] || 
-            MoneyCounter.numberUAH <= skillTree.skillsPrice[id]) return;
+            MoneyCounter.numberUAH < skillTree.skillsPrice[id]) return;
         skillTree.skillsLevel[id] = skillTree.skillsPrice[id];
         MoneyCounter.numberUAH -= skillTree.skillsPrice[id];
         skillTree.UpdateAllSkillsUI();

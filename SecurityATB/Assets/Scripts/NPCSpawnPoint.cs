@@ -10,10 +10,15 @@ public class NPCSpawnPoint : MonoBehaviour
     public float firstNumForRandom;
     public float secondNumForRandom;
     public bool canTimer;
+    private QueueManager queueManager;
+
+    public GameObject[] npcSprites;
+    public GameObject[] npcSpritesForMiniGames;
 
     private void Start()
     {
-        timer = Random.Range(firstNumForRandom, secondNumForRandom);//0.5f;
+        queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
+        timer = Random.Range(firstNumForRandom, secondNumForRandom);
         canTimer = true;
     }
 
@@ -26,7 +31,8 @@ public class NPCSpawnPoint : MonoBehaviour
         if (timer <= 0)
         {
             GameObject newNPC = Instantiate(NPC, spawnPoints[Random.Range(0, spawnPoints.Length)], Quaternion.identity, null);
-            timer = Random.Range(firstNumForRandom, secondNumForRandom);//0.5f;
+            timer = Random.Range(firstNumForRandom, secondNumForRandom);
+           // if (GameObject.FindGameObjectWithTag("NPC") == null || queueManager.npcQueue1.Count * 2 > GameObject.FindGameObjectsWithTag("NPC").Length)
         }
     }
 }

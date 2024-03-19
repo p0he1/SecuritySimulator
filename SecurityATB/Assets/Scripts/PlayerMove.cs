@@ -9,14 +9,18 @@ public class PlayerMove : MonoBehaviour
     public float speed;
     private Rigidbody2D rb2d;
     private Vector2 direction;
+    private Animator playerAnim;
+    private SpriteRenderer playerSP;
 
     private void Awake()
-    {
+    {        
         player = this;
     }
 
     private void Start()
     {
+        playerSP = GetComponent<SpriteRenderer>();
+        playerAnim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         LoadPlayer();
     }
@@ -34,6 +38,11 @@ public class PlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         rb2d.MovePosition(rb2d.position + direction * speed * Time.fixedDeltaTime);
+        if (direction == Vector2.zero) playerAnim.Play("idle");
+        else playerAnim.Play("walk");
+
+        if (direction.x > 0) playerSP.flipX = false;
+        else if (direction.x < 0) playerSP.flipX = true;
     }
 
     public void SavePlayer ()

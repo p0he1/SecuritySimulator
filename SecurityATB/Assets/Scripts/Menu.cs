@@ -8,8 +8,14 @@ public class Menu : MonoBehaviour
     public GameObject setPanel;
     public GameObject skillPanel;
     public GameObject deleteAllPanel;
+    private moneyCounter moneyCount;
 
     public NPCSpawnPoint spawn;
+
+    private void Start()
+    {
+        moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
+    }
 
     public void Settings()
     {        
@@ -72,6 +78,6 @@ public class Menu : MonoBehaviour
     private void OnApplicationQuit()
     {
         PlayerMove.player.SavePlayer();
-        PlayerPrefs.SetInt("money", PlayerPrefs.GetInt("money", 0));
+        PlayerPrefs.SetInt("money", moneyCount.numberUAH);
     }
 }

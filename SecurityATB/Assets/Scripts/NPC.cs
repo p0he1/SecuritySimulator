@@ -6,10 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class NPC : MonoBehaviour
 {
-    public enum TypeOfClient { justClient, thief, user, userAfterScene, thiefOnCams }
+    public enum TypeOfClient { justClient, thief, user, userAfterScene, thiefOnCams, withWrongCard/*WWC*/,  afterCheckWWC}
     public TypeOfClient typeOfClient;
 
     public GameObject visualCue;
+    public GameObject redVisualCue;
+    public GameObject jacket;
 
     public enum HowWalking {justWalking, waitingQueue}
     public HowWalking howWalking;
@@ -24,15 +26,20 @@ public class NPC : MonoBehaviour
     private int currentPos;
     public float stopTimerCR;
     public bool canTimerCR;
+    private Vector3 lastFramePos;
 
     public int chanseForRobber;
     public int chanseForRobberWithIlligalSubst;
     public int chanseForRobberOnCams;
+    public int chanseForWrongCard;
     public bool canMove;
     //MD - magnetic doors
     private float stopTimerMD;
     private bool canTimerMD;
     private SpriteRenderer spriteRenderer;
+    private NPCSpawnPoint npcSpawn;
+    private int whichSprite;
+    private Animator npcAnim;
 
     public bool dialogueJustNow;
     public bool playerInRange;
@@ -45,60 +52,73 @@ public class NPC : MonoBehaviour
     private moneyCounter moneyCount;
     private bool talkOnlyOnce;
 
-    public MiniGames miniGames;
+    private MiniGames miniGames;
 
-    public QueueManager queueManager;
+    private QueueManager queueManager;
     public bool onceInQueue;
     public int orderInQueue;
+
+    public GameObject[] police;
+    private bool isArrest;
 
     private void Start()
     {
         talkOnlyOnce = true;
         canMove = true;
         onceInQueue = true;
+        canTimerMD = false;
+        playerInRange = false;
         spriteRenderer = GetComponent<SpriteRenderer>();
         queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
         dialogueManager = GameObject.FindGameObjectWithTag("Canvas").GetComponent<DialogueManager>();
         moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
         miniGames = GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>();
+        npcSpawn = GameObject.FindGameObjectWithTag("NPC start").GetComponent<NPCSpawnPoint>();
 
         stopOrNotStop = UnityEngine.Random.Range(1, 5 + 1);
         cr1or2 = UnityEngine.Random.Range(1, 2 + 1);
         firstPoints[3] = exits[UnityEngine.Random.Range(0, 1 + 1)];
         secondPoints[3] = exits[UnityEngine.Random.Range(1, 2 + 1)];
+        whichSprite = UnityEngine.Random.Range(0, 9 + 1);
         WhatsTypeOfClient();
         stopTimerMD = 0.7f;
         stopTimerCR = 2f;
-        if (chanseForRobber == 8) spriteRenderer.color = Color.red;
-        else if (chanseForRobberWithIlligalSubst == 20) spriteRenderer.color = Color.black;
-        else if (miniGames.thiefOnCams)
+        lastFramePos = transform.position;
+        npcAnim = GetComponent<Animator>();
+        if (typeOfClient == TypeOfClient.thiefOnCams || typeOfClient == TypeOfClient.user || typeOfClient == TypeOfClient.userAfterScene)
         {
-            typeOfClient = TypeOfClient.thiefOnCams;
-            spriteRenderer.color = miniGames.randomColor;
-            miniGames.thiefOnCams = false;
+            npcAnim.runtimeAnimatorController = npcSpawn.npcSpritesForMiniGames[whichSprite].GetComponent<Animator>().runtimeAnimatorController;
+            spriteRenderer.sprite = npcSpawn.npcSpritesForMiniGames[whichSprite].GetComponent<SpriteRenderer>().sprite;
         }
-        else if (typeOfClient == TypeOfClient.userAfterScene) spriteRenderer.color = Color.black;
-        else if(typeOfClient == TypeOfClient.justClient) spriteRenderer.color = Color.green;
-        canTimerMD = false;
-        playerInRange = false;
+        else
+        {
+            spriteRenderer.sprite = npcSpawn.npcSprites[whichSprite].GetComponent<SpriteRenderer>().sprite;
+            npcAnim.runtimeAnimatorController = npcSpawn.npcSprites[whichSprite].GetComponent<Animator>().runtimeAnimatorController;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (typeOfClient != TypeOfClient.userAfterScene && howWalking == HowWalking.justWalking)
+        if (typeOfClient != TypeOfClient.userAfterScene && typeOfClient != TypeOfClient.afterCheckWWC && howWalking == HowWalking.justWalking)
         {
             if (stopOrNotStop != 5 && currentPos == 1) howWalking = HowWalking.waitingQueue;
             if (canMove)
             {
                 if(cr1or2 == 1)
                 {
-                    if (position == firstPoints[currentPos] && currentPos < firstPoints.Length - 1) currentPos++;
+                    if (position == firstPoints[currentPos] && currentPos < firstPoints.Length - 1)
+                    {
+                        currentPos++;
+                    }
                     else if (position == firstPoints[firstPoints.Length - 1]) Destroy(gameObject);
                     transform.position = Vector2.MoveTowards(transform.position, firstPoints[currentPos], speed);
                 }
                 else if(cr1or2 == 2)
                 {
-                    if (position == secondPoints[currentPos] && currentPos < secondPoints.Length - 1) currentPos++;
+                    if (position == secondPoints[currentPos] && currentPos < secondPoints.Length - 1)
+                    {
+                        currentPos++;
+                    }
                     else if (position == secondPoints[secondPoints.Length - 1]) Destroy(gameObject);
                     transform.position = Vector2.MoveTowards(transform.position, secondPoints[currentPos], speed);
                 }
@@ -106,6 +126,7 @@ public class NPC : MonoBehaviour
         }
         else if(howWalking == HowWalking.waitingQueue)
         {
+            spriteRenderer.sortingOrder = orderInQueue * -1;
             if(onceInQueue)
             {
                 orderInQueue = queueManager.Enqueue(gameObject.GetComponent<NPC>());
@@ -121,17 +142,26 @@ public class NPC : MonoBehaviour
                 canMove = false;
                 if (stopTimerCR <= 0)
                 {
-                    canMove = true;
-                    queueManager.Dequeue(gameObject.GetComponent<NPC>());
-                    howWalking = HowWalking.justWalking;
-                    currentPos = 2;
-                    canTimerCR = false;
-                    return;
+                    if(typeOfClient == TypeOfClient.withWrongCard)
+                    {
+                        redVisualCue.SetActive(true);
+                    }
+                    else
+                    {
+                        canMove = true;
+                        queueManager.Dequeue(gameObject.GetComponent<NPC>());
+                        howWalking = HowWalking.justWalking;
+                        currentPos = 2;
+                        canTimerCR = false;
+                        return;
+                    }
                 }
             }
-
-            if(cr1or2 == 1)transform.position = Vector2.MoveTowards(transform.position, queueManager.firstQueuePlaces[orderInQueue], speed);
-            else if(cr1or2 == 2) transform.position = Vector2.MoveTowards(transform.position, queueManager.secondQueuePlaces[orderInQueue], speed);
+            if(canMove)
+            {
+                if (cr1or2 == 1) transform.position = Vector2.MoveTowards(transform.position, queueManager.firstQueuePlaces[orderInQueue], speed);
+                else if (cr1or2 == 2) transform.position = Vector2.MoveTowards(transform.position, queueManager.secondQueuePlaces[orderInQueue], speed);
+            }
         }
 
         if(typeOfClient == TypeOfClient.thief)
@@ -162,7 +192,6 @@ public class NPC : MonoBehaviour
                 {
                     dialogueManager.dialogueIsPlaying = false;
                     dialogueManager.dialoguePanel.SetActive(false);
-                    spriteRenderer.color = Color.cyan;
                     canTimerMD = false;
                     stopTimerMD = 1;
                     canMove = true;
@@ -170,6 +199,7 @@ public class NPC : MonoBehaviour
                     dialogueJustNow = false;
                     dialogueManager.dialogueText.text = "";
                     moneyCount.numberUAH += 5;
+                    isArrest = true;
                 }
                 else if (dialogueManager.dialogueText.text == "\"Client run away\"")
                 {
@@ -190,14 +220,20 @@ public class NPC : MonoBehaviour
                     if (i != 1)
                     {
                         PlayerPrefs.SetInt("money", moneyCount.numberUAH+=5);
-                        PlayerMove.player.SavePlayer();
+                        //we must spawn player behind user
+                        PlayerPrefs.SetFloat("x", miniGames.spawnForUser.x+1);
+                        PlayerPrefs.SetFloat("y", miniGames.spawnForUser.y);
+                        PlayerPrefs.SetFloat("z", transform.position.z);
                         SceneManager.LoadScene(2);
                     }
 
                     else if (i == 1)
                     {
                         PlayerPrefs.SetInt("money", moneyCount.numberUAH+=5);
-                        PlayerMove.player.SavePlayer();
+                        //we must spawn player behind user
+                        PlayerPrefs.SetFloat("x", miniGames.spawnForUser.x + 1);
+                        PlayerPrefs.SetFloat("y", miniGames.spawnForUser.y);
+                        PlayerPrefs.SetFloat("z", transform.position.z);
                         SceneManager.LoadScene(1);
                     }
                 }
@@ -208,7 +244,7 @@ public class NPC : MonoBehaviour
         {
             if(dialogueManager.dialogueText.text == "You: I need to call the police")
             {
-                spriteRenderer.color = Color.gray;
+                isArrest = true;
                 canMove = true;
                 dialogueManager.dialoguePanel.SetActive(false);
                 dialogueJustNow = false;
@@ -218,7 +254,6 @@ public class NPC : MonoBehaviour
             }
             else if(dialogueManager.dialogueText.text == "You: Okay, now you can go")
             {
-                spriteRenderer.color = Color.white;
                 canMove = true;
                 dialogueManager.dialoguePanel.SetActive(false);
                 dialogueJustNow = false;
@@ -240,7 +275,7 @@ public class NPC : MonoBehaviour
             {
                 dialogueManager.dialogueIsPlaying = false;
                 dialogueManager.dialoguePanel.SetActive(false);
-                spriteRenderer.color = Color.cyan;
+                isArrest = true;
                 canMove = true;
                 visualCue.SetActive(false);
                 dialogueJustNow = false;
@@ -251,13 +286,37 @@ public class NPC : MonoBehaviour
             {
                 dialogueManager.dialogueIsPlaying = false;
                 dialogueManager.dialoguePanel.SetActive(false);
-                spriteRenderer.color = Color.cyan;
                 canMove = true;
                 visualCue.SetActive(false);
                 dialogueJustNow = false;
                 dialogueManager.dialogueText.text = "";
             }
         }
+
+        if(typeOfClient == TypeOfClient.afterCheckWWC)
+        {   
+            if(PlayerPrefs.GetInt("1or2queue") == 1)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, firstPoints[currentPos], speed);
+            }
+            else if(PlayerPrefs.GetInt("1or2queue") == 2)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, secondPoints[currentPos], speed);
+            }
+        }
+
+        if (isArrest) underArrest();
+
+        if (transform.position != lastFramePos)
+        {
+            npcAnim.Play("walk");
+
+            if (transform.position.x > lastFramePos.x) spriteRenderer.flipX = false;
+            else if (transform.position.x < lastFramePos.x) spriteRenderer.flipX = true;
+
+            lastFramePos = transform.position;            
+        }
+        else npcAnim.Play("idle");
 
         position = transform.position;
     }
@@ -318,11 +377,25 @@ public class NPC : MonoBehaviour
                 visualCue.SetActive(false);
             }
         }
+
+        if (typeOfClient == TypeOfClient.withWrongCard)
+        {
+            if (Input.GetKeyDown(KeyCode.E) && playerInRange)
+            {
+                PlayerPrefs.SetInt("numberOfSprite", whichSprite);
+                if (position == queueManager.firstQueuePlaces[0]) PlayerPrefs.SetInt("1or2queue", 1);
+                if (position == queueManager.secondQueuePlaces[0]) PlayerPrefs.SetInt("1or2queue", 2);
+                redVisualCue.SetActive(true);
+                PlayerPrefs.SetInt("money", moneyCount.numberUAH);
+                PlayerMove.player.SavePlayer();
+                SceneManager.LoadScene(3);
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(typeOfClient == TypeOfClient.thief)
+        if(typeOfClient == TypeOfClient.thief && howWalking != HowWalking.waitingQueue)
         {
             if (collision.gameObject.tag == "Exit")
             {
@@ -335,28 +408,46 @@ public class NPC : MonoBehaviour
             }
 
         }
-        if(typeOfClient == TypeOfClient.user)
+        if(typeOfClient == TypeOfClient.user && howWalking != HowWalking.waitingQueue)
         {
             if (collision.gameObject.tag == "Dog Trigger")
             {
                 canMove = false;
             }
+            if (!canMove && collision.gameObject.tag == "Player") playerInRange = true;
         }
-        
-        if(typeOfClient == TypeOfClient.thiefOnCams)
+        if (typeOfClient == TypeOfClient.thiefOnCams)
         {
-           if (collision.gameObject.tag == "Player")
-           {
-               playerInRange = true;
-           } 
-        }       
+            if (collision.gameObject.tag == "Player")
+            {
+                playerInRange = true;
+            }
+        }
+        if(typeOfClient == TypeOfClient.withWrongCard && redVisualCue.activeSelf)
+        {
+            if (collision.gameObject.tag == "Player")
+            {
+                playerInRange = true;
+            }
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player" && !canMove)
+        if (typeOfClient == TypeOfClient.thief)
         {
-            playerInRange = true;
+            if (collision.gameObject.tag == "Player" && !canMove && howWalking != HowWalking.waitingQueue)
+            {
+                playerInRange = true;
+            }
+        }
+        if (typeOfClient == TypeOfClient.user && howWalking != HowWalking.waitingQueue)
+        {
+            if (collision.gameObject.tag == "Dog Trigger")
+            {
+                canMove = false;
+            }
+            if (!canMove && collision.gameObject.tag == "Player") playerInRange = true;
         }
     }
 
@@ -370,6 +461,45 @@ public class NPC : MonoBehaviour
 
     private void WhatsTypeOfClient()
     {
+        if (PlayerPrefs.GetInt("isWithPolice", 0) == 1)
+        {
+            canMove = false;
+            typeOfClient = TypeOfClient.userAfterScene;
+            whichSprite = 1;
+            DialogueManager.GetInstance().EnterDialogueMode(userDialogAndPolice);
+            PlayerPrefs.SetInt("isWithPolice", 0);
+            return;
+        }
+        else if (PlayerPrefs.GetInt("isWithPolice", 0) == 2)
+        {
+            canMove = false;
+            whichSprite = 1;
+            typeOfClient = TypeOfClient.userAfterScene;
+            DialogueManager.GetInstance().EnterDialogueMode(userDialogWihoutPolice);
+            PlayerPrefs.SetInt("isWithPolice", 0);
+            return;
+        }
+
+        if (PlayerPrefs.GetInt("isCardThief", 0) == 1)
+        {
+            PlayerPrefs.SetInt("isCardThief", 0);
+            transform.position = queueManager.secondQueuePlaces[0];
+            isArrest = true;
+            whichSprite = PlayerPrefs.GetInt("numberOfSprite", 0);
+            typeOfClient = TypeOfClient.afterCheckWWC;
+            currentPos = 3;
+            return;
+        }
+        else if (PlayerPrefs.GetInt("isCardThief", 0) == 2)
+        {
+            PlayerPrefs.SetInt("isCardThief", 0);
+            whichSprite = PlayerPrefs.GetInt("numberOfSprite", 0);
+            typeOfClient = TypeOfClient.afterCheckWWC;
+            currentPos = 3;
+            return;
+        }
+
+
         typeOfClient = TypeOfClient.justClient;
         chanseForRobber = UnityEngine.Random.Range(0, 8 + 1);
         if(chanseForRobber == 8) typeOfClient = TypeOfClient.thief;
@@ -379,7 +509,9 @@ public class NPC : MonoBehaviour
             if (chanseForRobberWithIlligalSubst == 20)
             {
                 chanseForRobber = 0;
+                whichSprite = 1;
                 typeOfClient = TypeOfClient.user;
+                return;
             }
         }
         if(chanseForRobber == 8 && PlayerPrefs.GetInt("level_5", 1) == PlayerPrefs.GetInt("price_5", 0))
@@ -390,21 +522,39 @@ public class NPC : MonoBehaviour
                 miniGames.warningThiefOnCams = true;
                 Destroy(gameObject);
             }
+        }        
+        if(PlayerPrefs.GetInt("level_10", 1) == PlayerPrefs.GetInt("price_10", 0) && PlayerPrefs.GetInt("level_11", 1) == PlayerPrefs.GetInt("price_11", 0)) 
+        chanseForWrongCard = UnityEngine.Random.Range(0, 15 + 1);
+        if (chanseForWrongCard == 15)
+        {
+            typeOfClient = TypeOfClient.withWrongCard;
+            return;
         }
 
-        if(PlayerPrefs.GetInt("isWithPolice", 0) == 1)
+        if (miniGames.thiefOnCams)
         {
-            canMove = false;
-            typeOfClient = TypeOfClient.userAfterScene;
-            DialogueManager.GetInstance().EnterDialogueMode(userDialogAndPolice);
-            PlayerPrefs.SetInt("isWithPolice", 0);
+            typeOfClient = TypeOfClient.thiefOnCams;
+            jacket.SetActive(true);
+            jacket.GetComponent<SpriteRenderer>().color = miniGames.randomColor;
+            miniGames.thiefOnCams = false;
+            whichSprite = 0;
+            return;
         }
-        else if(PlayerPrefs.GetInt("isWithPolice", 0) == 2)
+    }
+
+    private void underArrest()
+    {
+        foreach(GameObject cop in police)
         {
-            canMove = false;
-            typeOfClient = TypeOfClient.userAfterScene;
-            DialogueManager.GetInstance().EnterDialogueMode(userDialogWihoutPolice);
-            PlayerPrefs.SetInt("isWithPolice", 0);
+            cop.SetActive(true);
+            if(transform.position != lastFramePos)
+            {
+                cop.GetComponent<Animator>().Play("walk");
+            }
+            else
+            {
+                cop.GetComponent<Animator>().Play("idle");
+            }
         }
     }
 }
