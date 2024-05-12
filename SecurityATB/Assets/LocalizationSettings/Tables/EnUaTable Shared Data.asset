@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: EnUaTable Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: EnUaTable
+  m_TableCollectionNameGuidString: 40ebadab41f25824b8732d009d80bc62
+  m_Entries:
+  - m_Id: 1394877943808
+    m_Key: menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1069904458407936
+    m_Key: lang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1071865681403904
+    m_Key: sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1072196989476864
+    m_Key: deleteSaves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1075972806795264
+    m_Key: sure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076426102005760
+    m_Key: all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076662690111488
+    m_Key: delYes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1076814205149184
+    m_Key: delNo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1380968954089472
+    m_Key: radioText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1381561131094016
+    m_Key: forRemoveRadio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1383465923923968
+    m_Key: tree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2814678832271360
+    m_Key: backWithWrongCard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2815742365159424
+    m_Key: Arrest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2815976474431488
+    m_Key: Release
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2816435561975808
+    m_Key: Start
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 2408175752989376614
+  references:
+    version: 2
+    RefIds:
+    - rid: 2408175752989376614
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1714852309895

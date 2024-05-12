@@ -16,6 +16,7 @@ public class DialogueManager : MonoBehaviour
 
     public GameObject[] choices;
     public TextMeshProUGUI[] choicesText;
+    public bool choisesActive;
 
     private void Awake()
     {
@@ -48,7 +49,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (dialogueIsPlaying && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !choisesActive && dialogueIsPlaying)
         {
             ContinueStory();
         }
@@ -101,6 +102,7 @@ public class DialogueManager : MonoBehaviour
             choices[index].gameObject.SetActive(true);
             choicesText[index].text = choice.text;
             index++;
+            choisesActive = true;
         }
 
         for (int i = index; i < choices.Length; i++)
@@ -122,5 +124,6 @@ public class DialogueManager : MonoBehaviour
     {
         currentStory.ChooseChoiceIndex(choiceIndex);
         ContinueStory();
+        choisesActive = false;
     }
 }

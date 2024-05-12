@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 public class SkillTree : MonoBehaviour
 {
@@ -27,10 +28,12 @@ public class SkillTree : MonoBehaviour
     private void FixedUpdate()
     {
         if (fixedUpdateOnce)
-{
+        {
             if(skillPanel.activeSelf)
             {
-                skillsName = new string[] {
+                if(PlayerPrefs.GetInt("LocaleKey", 0) == 0)
+                {
+                    skillsName = new string[] {
                     "Magnetic door",
                     "metal detector",
                     "Animals for finding illegal substances",
@@ -46,7 +49,29 @@ public class SkillTree : MonoBehaviour
                     "Alarm system",
                     "Cameras with higher quality",
                     "Psycho. tests to detect deception"
-                };
+                    };
+                }
+                else if(PlayerPrefs.GetInt("LocaleKey", 0) == 1)
+                {
+                    skillsName = new string[] {
+                    "Протикрадіжні двері",
+                    "Металодетектор",
+                    "Тварини для знах. незаконних субст.",
+                    "Онлайн підпис для транзакцій",
+                    "Ренген для перевірки покупок",
+                    "Камери",
+                    "ШІ для відстежування руху покупців",
+                    "ШІ для виявлення підозрілих дій",
+                    "Більше камер",
+                    "Звукозаписні пристрої з ШІ" ,
+                    "Відеозапис усіх транзакцій",
+                    "Система \"face ID\" для клієтнів",
+                    "Сигналізація",
+                    "Камери з високою якістю",
+                    "Психо. тести на виявлення обману"
+                    };
+                }
+                
                 skillsPrice = new int[]
                 {
                     0, 20, 30, 50, 200, 20, 40, 40, 50, 50, 50, 100, 50, 200, 100
@@ -74,6 +99,7 @@ public class SkillTree : MonoBehaviour
                 fixedUpdateOnce = false;
             }
         }
+        if(skillPanel.activeSelf) UpdateAllSkillsUI();
     }
 
     public void UpdateAllSkillsUI()
@@ -83,5 +109,45 @@ public class SkillTree : MonoBehaviour
             skill.UpdateUI();
         };
         GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>().UpdateMiniGames();
+        if (PlayerPrefs.GetInt("LocaleKey", 0) == 0)
+        {
+            skillsName = new string[] {
+                    "Magnetic door",
+                    "metal detector",
+                    "Animals for finding illegal substances",
+                    "Electronic signature for transactions",
+                    "X-ray devices for purchases",
+                    "Cameras",
+                    "AI for tracking the movement of client",
+                    "Robots to detect suspicious activity",
+                    "More cameras",
+                    "Sound recording tools based on AI" ,
+                    "Video record for all transactions",
+                    "System of reg. of buyers by face",
+                    "Alarm system",
+                    "Cameras with higher quality",
+                    "Psycho. tests to detect deception"
+                    };
+        }
+        else if (PlayerPrefs.GetInt("LocaleKey", 0) == 1)
+        {
+            skillsName = new string[] {
+                    "Протикрадіжні двері",
+                    "Металодетектор",
+                    "Тварини для знах. незаконних субст.",
+                    "Онлайн підпис для транзакцій",
+                    "Ренген для перевірки покупок",
+                    "Камери",
+                    "ШІ для відстежування руху покупців",
+                    "ШІ для виявлення підозрілих дій",
+                    "Більше камер",
+                    "Звукозаписні пристрої з ШІ" ,
+                    "Відеозапис усіх транзакцій",
+                    "Система \"face ID\" для клієтнів",
+                    "Сигналізація",
+                    "Камери з високою якістю",
+                    "Психо. тести на виявлення обману"
+                    };
+        }
     }
 }

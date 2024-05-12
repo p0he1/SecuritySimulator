@@ -33,7 +33,8 @@ public class MiniGames : MonoBehaviour
     public GameObject[] timersFill;
     public GameObject[] emptysToLocateTimers;
     //second alarm needs only for sprite
-    public GameObject stopAlarmButton;
+    //public GameObject stopAlarmButton;
+    public GameObject cardScroll;
 
     private moneyCounter MoneyCounter;
 
@@ -43,7 +44,7 @@ public class MiniGames : MonoBehaviour
         foreach (GameObject clock in timersFill) clock.SetActive(false);
         constForRandom = true;
         warningPanel.SetActive(false);
-        frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
+        frequencyOfCashierAlarm = UnityEngine.Random.Range(50, 60 + 1);
         cashierAlarmTimer = 4;
         if (PlayerPrefs.GetInt("isWithPolice", 0) != 0)
         {
@@ -54,11 +55,11 @@ public class MiniGames : MonoBehaviour
         {
             if(PlayerPrefs.GetInt("1or2queue", 0) == 1)
             {
-                GameObject newNPC = Instantiate(NPC, lastPointFirstQueue, Quaternion.identity, null);
+                GameObject newNPC = Instantiate(NPC, new Vector2(-2.9f, -1.2f), Quaternion.identity, null);
             }
             else if(PlayerPrefs.GetInt("1or2queue", 0) == 2)
             {
-                GameObject newNPC = Instantiate(NPC, lastPointSecondQueue, Quaternion.identity, null);
+                GameObject newNPC = Instantiate(NPC, new Vector2(0.33f, -1.2f), Quaternion.identity, null);
             }
         }
         newTimer = true;
@@ -102,13 +103,14 @@ public class MiniGames : MonoBehaviour
             
             if(Vector2.Distance(PlayerMove.player.transform.position, emptysToLocateTimers[randomInt].transform.position) <= 1 && cashierAlarmTimer > 0)
             {
-                stopAlarmButton.SetActive(true);
+                cardScroll.SetActive(true);
+                //stopAlarmButton.SetActive(true);
             }
             else if(cashierAlarmTimer <= 0)
             {
                 timersFill[randomInt].SetActive(false);
-                stopAlarmButton.SetActive(false);
-                frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
+                cardScroll.SetActive(false);
+                frequencyOfCashierAlarm = UnityEngine.Random.Range(50, 60 + 1);
                 cashierAlarmTimer = 4;
                 constForRandom = true;
             }
@@ -138,15 +140,17 @@ public class MiniGames : MonoBehaviour
         dog.SetActive(PlayerPrefs.GetInt("level_2", 0) == PlayerPrefs.GetInt("price_2", 1));
     }
 
-    public void StopAlarmBut()
+    public void StopAlarmScroll()
     {
-        MoneyCounter.numberUAH += 5;        
-        frequencyOfCashierAlarm = UnityEngine.Random.Range(0, 10);//(50, 60 + 1);
-        cashierAlarmTimer = 4;
-        constForRandom = true;
-        //gameObject.GetComponent<Image>().sprite =
-        stopAlarmButton.GetComponent<Animator>().Play("off");
-        stopAlarmButton.SetActive(false);
-        timersFill[randomInt].SetActive(false);
+        if(cardScroll.GetComponent<Scrollbar>().value == 1)
+        {
+            MoneyCounter.numberUAH += 5;
+            frequencyOfCashierAlarm = UnityEngine.Random.Range(50, 60 + 1);
+            cashierAlarmTimer = 4;
+            constForRandom = true;
+            cardScroll.SetActive(false);
+            timersFill[randomInt].SetActive(false);
+            cardScroll.GetComponent<Scrollbar>().value = 0;
+        }       
     }
 }

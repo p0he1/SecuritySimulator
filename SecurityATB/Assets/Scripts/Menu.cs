@@ -11,9 +11,11 @@ public class Menu : MonoBehaviour
     private moneyCounter moneyCount;
 
     public NPCSpawnPoint spawn;
+    private QueueManager queueManager;
 
     private void Start()
     {
+        queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
         moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
     }
 
@@ -26,6 +28,7 @@ public class Menu : MonoBehaviour
                 npc.GetComponent<NPC>().canMove = false;
             }
             spawn.canTimer = false;
+            queueManager.canTimer = false;
             setPanel.SetActive(true);
         }
         else
@@ -36,17 +39,20 @@ public class Menu : MonoBehaviour
             }
             //npc.speed = 0.05f;
             spawn.canTimer = true;
+            queueManager.canTimer = true;
             setPanel.SetActive(false);
         }
     }
 
     public void Shop()
     {
+        if (setPanel.activeSelf) return;
         foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
         {
             npc.GetComponent<NPC>().canMove = false;
         }
         spawn.canTimer = false;
+        queueManager.canTimer = false;
         skillPanel.SetActive(true);
     }
     public void exitShop()
@@ -56,6 +62,7 @@ public class Menu : MonoBehaviour
             npc.GetComponent<NPC>().canMove = true;
         }
         spawn.canTimer = true;
+        queueManager.canTimer = true;
         skillPanel.SetActive(false);
     }
 

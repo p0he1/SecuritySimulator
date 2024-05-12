@@ -29,10 +29,12 @@ public class NPCSpawnPoint : MonoBehaviour
             timer -= Time.deltaTime;
         }
         if (timer <= 0)
-        {
-            GameObject newNPC = Instantiate(NPC, spawnPoints[Random.Range(0, spawnPoints.Length)], Quaternion.identity, null);
-            timer = Random.Range(firstNumForRandom, secondNumForRandom);
-           // if (GameObject.FindGameObjectWithTag("NPC") == null || queueManager.npcQueue1.Count * 2 > GameObject.FindGameObjectsWithTag("NPC").Length)
+        {   
+            if(queueManager.firstQueuePlaces.Count != queueManager.npcQueue1.Count && queueManager.secondQueuePlaces.Count != queueManager.npcQueue2.Count)
+            {
+                GameObject newNPC = Instantiate(NPC, spawnPoints[Random.Range(0, spawnPoints.Length)], Quaternion.identity, null);
+                timer = Random.Range(firstNumForRandom, secondNumForRandom);
+            }
         }
     }
 }

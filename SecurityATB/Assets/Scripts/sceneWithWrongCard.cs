@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +20,8 @@ public class sceneWithWrongCard : MonoBehaviour
     public int numberOfNpcSprite;
     public string[] names;
     public string[] lastNames;
+    public string[] uaNames;
+    public string[] uaLastNames;
     public GameObject[] npcs;
 
     public Image idPhoto;
@@ -45,17 +47,69 @@ public class sceneWithWrongCard : MonoBehaviour
             //nameNumOnCard = nameNumOnCId = UnityEngine.Random.Range(0, 9+1);
             //lastNameNumOnCard = lastNameNumOnCId = UnityEngine.Random.Range(0, 9+1);
             idPhoto.sprite = clientPhoto.sprite = npcs[numberOfNpcSprite].GetComponent<SpriteRenderer>().sprite;
-            nameTextOnCard.text = nameTextOnCId.text = names[UnityEngine.Random.Range(0, 9 + 1)];
-            lastNameTextOnCard.text = lastNameTextOnCId.text = lastNames[UnityEngine.Random.Range(0, 9 + 1)];
+            if(PlayerPrefs.GetInt("LocaleKey", 0) == 0)
+            {
+                if (numberOfNpcSprite < 15)
+                {
+                    nameTextOnCard.text = nameTextOnCId.text = names[UnityEngine.Random.Range(0, 14 + 1)];
+                    lastNameTextOnCard.text = lastNameTextOnCId.text = lastNames[UnityEngine.Random.Range(0, 14 + 1)];
+                }
+                else if (numberOfNpcSprite >= 15)
+                {
+                    nameTextOnCard.text = nameTextOnCId.text = names[UnityEngine.Random.Range(15, 29 + 1)];
+                    lastNameTextOnCard.text = lastNameTextOnCId.text = lastNames[UnityEngine.Random.Range(15, 29 + 1)];
+                }
+            }
+            else if(PlayerPrefs.GetInt("LocaleKey", 0) == 1)
+            {
+                if (numberOfNpcSprite < 15)
+                {
+                    nameTextOnCard.text = nameTextOnCId.text = uaNames[UnityEngine.Random.Range(0, 14 + 1)];
+                    lastNameTextOnCard.text = lastNameTextOnCId.text = uaLastNames[UnityEngine.Random.Range(0, 14 + 1)];
+                }
+                else if (numberOfNpcSprite >= 15)
+                {
+                    nameTextOnCard.text = nameTextOnCId.text = uaNames[UnityEngine.Random.Range(15, 29 + 1)];
+                    lastNameTextOnCard.text = lastNameTextOnCId.text = uaLastNames[UnityEngine.Random.Range(15, 29 + 1)];
+                }
+            }
+            
+            
         }
         else
         {
             idPhoto.sprite = npcs[numberOfNpcSprite].GetComponent<SpriteRenderer>().sprite;
-            clientPhoto.sprite = npcs[UnityEngine.Random.Range(0, 9 + 1)].GetComponent<SpriteRenderer>().sprite;
-            nameTextOnCard.text = names[UnityEngine.Random.Range(0, 9 + 1)];
-            nameTextOnCId.text = names[UnityEngine.Random.Range(0, 9 + 1)];
-            lastNameTextOnCard.text = lastNames[UnityEngine.Random.Range(0, 9 + 1)];
-            lastNameTextOnCId.text = lastNames[UnityEngine.Random.Range(0, 9 + 1)];
+            clientPhoto.sprite = npcs[UnityEngine.Random.Range(0, 29 + 1)].GetComponent<SpriteRenderer>().sprite;
+            if (PlayerPrefs.GetInt("LocaleKey", 0) == 0)
+            {
+                if (numberOfNpcSprite < 15)
+                {
+                    nameTextOnCard.text = names[UnityEngine.Random.Range(0, 14 + 1)];
+                    lastNameTextOnCard.text = lastNames[UnityEngine.Random.Range(0, 14 + 1)];
+                }
+                else if (numberOfNpcSprite >= 15)
+                {
+                    nameTextOnCard.text = names[UnityEngine.Random.Range(15, 29 + 1)];
+                    lastNameTextOnCard.text = lastNames[UnityEngine.Random.Range(15, 29 + 1)];
+                }
+                nameTextOnCId.text = names[UnityEngine.Random.Range(0, 29 + 1)];
+                lastNameTextOnCId.text = lastNames[UnityEngine.Random.Range(0, 29 + 1)];
+            }
+            else if (PlayerPrefs.GetInt("LocaleKey", 0) == 1)
+            {
+                if (numberOfNpcSprite < 15)
+                {
+                    nameTextOnCard.text = uaNames[UnityEngine.Random.Range(0, 14 + 1)];
+                    lastNameTextOnCard.text = uaLastNames[UnityEngine.Random.Range(0, 14 + 1)];
+                }
+                else if (numberOfNpcSprite >= 15)
+                {
+                    nameTextOnCard.text = uaNames[UnityEngine.Random.Range(15, 29 + 1)];
+                    lastNameTextOnCard.text = uaLastNames[UnityEngine.Random.Range(15, 29 + 1)];
+                }
+                nameTextOnCId.text = uaNames[UnityEngine.Random.Range(0, 29 + 1)];
+                lastNameTextOnCId.text = uaLastNames[UnityEngine.Random.Range(0, 29 + 1)];
+            }
         }
         cardNum.text = $"**{UnityEngine.Random.Range(1000, 10000)}";
         idCardNum.text = $"{UnityEngine.Random.Range(100000, 999999)}";
@@ -64,13 +118,13 @@ public class sceneWithWrongCard : MonoBehaviour
     public void RightAnswer()
     {
         panel.SetActive(true);
-        textPanel.text = "Right answer!\n+5";
+        textPanel.text = PlayerPrefs.GetInt("LocaleKey", 0) == 0 ? "Right answer!\n+5" : "Правильна відповідь!\n+5";
         PlayerPrefs.SetInt("money", PlayerPrefs.GetInt("money", 0) + 5);
     }    
     public void WrongAnswer()
     {
         panel.SetActive(true);
-        textPanel.text = "Wrong answer!";
+        textPanel.text = PlayerPrefs.GetInt("LocaleKey", 0) == 0 ? "Wrong answer!" : "Неправильна відповідь!";
     }  
     public void Arrest()
     {

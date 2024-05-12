@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -52,11 +52,11 @@ public class Maze : MonoBehaviour
             dialoguePanel.SetActive(true);
             if(playerInMaze.flewInBushes == true)
             {
-                conclusionText.text = "You flew to the bushes";
+                conclusionText.text = PlayerPrefs.GetInt("LocaleKey", 0) == 0 ? "You flew to the bushes" : "Ви полетіли до кущів";
             }
             else if(playerInMaze.isCoughtUp == true)
             {
-                conclusionText.text = "You cought!";
+                conclusionText.text = PlayerPrefs.GetInt("LocaleKey", 0) == 0 ? "You cought!" : "Спіймали!";
                 PlayerPrefs.SetInt("money", money + 5);
             }
         }

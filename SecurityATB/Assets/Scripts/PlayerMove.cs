@@ -11,6 +11,7 @@ public class PlayerMove : MonoBehaviour
     private Vector2 direction;
     private Animator playerAnim;
     private SpriteRenderer playerSP;
+    public Joystick joystick;
 
     private void Awake()
     {        
@@ -32,8 +33,8 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
-        direction.x = Input.GetAxisRaw("Horizontal");
-        direction.y = Input.GetAxisRaw("Vertical");
+        direction.x = joystick.Direction.x;
+        direction.y = joystick.Direction.y;
     }
     private void FixedUpdate()
     {
