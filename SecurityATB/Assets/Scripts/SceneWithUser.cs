@@ -70,4 +70,8 @@ public class SceneWithUser : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void ClickButton(GameObject but)
+    {
+        but.SetActive(false);
+    }
 }

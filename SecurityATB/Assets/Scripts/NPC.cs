@@ -12,7 +12,6 @@ public class NPC : MonoBehaviour
     public GameObject visualCue;
     public GameObject redVisualCue;
     public GameObject jacket;
-    private GameObject speakButton;
 
     public enum HowWalking {justWalking, waitingQueue}
     public HowWalking howWalking;
@@ -27,6 +26,7 @@ public class NPC : MonoBehaviour
     private int currentPos;
     public float stopTimerCR;
     public bool canTimerCR;
+    public bool isTimeOn;
     private Vector3 lastFramePos;
 
     public int chanseForRobber;
@@ -38,6 +38,7 @@ public class NPC : MonoBehaviour
     private float stopTimerMD;
     private bool canTimerMD;
     private SpriteRenderer spriteRenderer;
+    public SpriteRenderer shadow;
     private NPCSpawnPoint npcSpawn;
     public int whichSprite;
     private Animator npcAnim;
@@ -75,13 +76,13 @@ public class NPC : MonoBehaviour
         onceInQueue = true;
         canTimerMD = false;
         playerInRange = false;
+        isTimeOn = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
         queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
         dialogueManager = GameObject.FindGameObjectWithTag("Canvas").GetComponent<DialogueManager>();
         moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
         miniGames = GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>();
         npcSpawn = GameObject.FindGameObjectWithTag("NPC start").GetComponent<NPCSpawnPoint>();
-        speakButton = GameObject.FindGameObjectWithTag("Speak Button");
 
         stopOrNotStop = UnityEngine.Random.Range(1, 5 + 1);
         cr1or2 = UnityEngine.Random.Range(1, 2 + 1);
@@ -134,16 +135,14 @@ public class NPC : MonoBehaviour
         }
         else if(howWalking == HowWalking.waitingQueue)
         {
-            spriteRenderer.sortingOrder = orderInQueue * -1;
+            spriteRenderer.sortingOrder = shadow.sortingOrder = orderInQueue * -1;
             if(onceInQueue)
             {
                 orderInQueue = queueManager.Enqueue(gameObject.GetComponent<NPC>());
                 onceInQueue = false;
             }
-            if (position == queueManager.firstQueuePlaces[0] || position == queueManager.secondQueuePlaces[0])
-            {
-                canTimerCR = true;
-            }
+            if (position == queueManager.firstQueuePlaces[0] | position == queueManager.secondQueuePlaces[0] && isTimeOn) canTimerCR = true;
+            else canTimerCR = false;
             if (canTimerCR)
             {
                 stopTimerCR -= Time.deltaTime;
@@ -188,7 +187,7 @@ public class NPC : MonoBehaviour
                     || dialogueManager.dialogueText.text == "You: OK, you may go, but please remember not to leave anything in your pockets or backpack."
                     || dialogueManager.dialogueText.text == "Ви: Добре, ви можете йти, тільки не забувайте нічого в ваших кишенях"
                     || dialogueManager.dialogueText.text == "Ви: Добре, ви можете йти, тільки не забувайте більше нічого у себе."
-                    || dialogueManager.dialogueText.text == "Ви: Зрозуміло, ви можете йти, але не залишайте нічого більше в рюкзаку.")
+                    || dialogueManager.dialogueText.text == "Ви: Зрозуміло, ви можете піти, але не залишайте нічого більше в рюкзаку.")
                 {
                     dialogueManager.dialogueIsPlaying = false;
                     dialogueManager.dialoguePanel.SetActive(false);
@@ -199,6 +198,7 @@ public class NPC : MonoBehaviour
                     dialogueJustNow = false;
                     dialogueManager.dialogueText.text = "";
                     moneyCount.numberUAH += 5;
+                    dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
                 }
                 else if (dialogueManager.dialogueText.text == "You: I still have to call the police"
                     || dialogueManager.dialogueText.text == "You: I still must inform the police."
@@ -217,6 +217,7 @@ public class NPC : MonoBehaviour
                     dialogueManager.dialogueText.text = "";
                     moneyCount.numberUAH += 5;
                     isArrest = true;
+                    dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
                 }
                 else if (dialogueManager.dialogueText.text == "\"Client run away\"")
                 {
@@ -237,6 +238,7 @@ public class NPC : MonoBehaviour
                     int i = UnityEngine.Random.Range(1, 5);
                     if (i != 1)
                     {
+                        dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
                         PlayerPrefs.SetInt("money", moneyCount.numberUAH+=5);
                         //we must spawn player behind user
                         PlayerPrefs.SetFloat("x", miniGames.spawnForUser.x+1);
@@ -247,6 +249,7 @@ public class NPC : MonoBehaviour
 
                     else if (i == 1)
                     {
+                        dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
                         PlayerPrefs.SetInt("money", moneyCount.numberUAH+=5);
                         //we must spawn player behind user
                         PlayerPrefs.SetFloat("x", miniGames.spawnForUser.x + 1);
@@ -270,6 +273,7 @@ public class NPC : MonoBehaviour
                 dialogueManager.dialogueText.text = "";
                 dialogueManager.dialogueIsPlaying = false;
                 moneyCount.numberUAH += 5;
+                dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
             }
             else if(dialogueManager.dialogueText.text == "You: Okay, now you can go"
                 || dialogueManager.dialogueText.text == "Ви: Добре, тепер ви можете йти.")
@@ -280,6 +284,7 @@ public class NPC : MonoBehaviour
                 dialogueManager.dialogueText.text = "";
                 dialogueManager.dialogueIsPlaying = false;
                 moneyCount.numberUAH += 5;
+                dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
             }
 
             if(canMove)
@@ -302,6 +307,7 @@ public class NPC : MonoBehaviour
                 dialogueJustNow = false;
                 dialogueManager.dialogueText.text = "";
                 moneyCount.numberUAH += 5;
+                dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
             }
             else if (dialogueManager.dialogueText.text == "You: OK, you can go" || dialogueManager.dialogueText.text == "Ви: Добре, ви можете йти.")
             {
@@ -311,6 +317,7 @@ public class NPC : MonoBehaviour
                 visualCue.SetActive(false);
                 dialogueJustNow = false;
                 dialogueManager.dialogueText.text = "";
+                dialogueManager.StartCoroutine(dialogueManager.ExitDialogueMode());
             }
         }
 

@@ -25,8 +25,11 @@ public class SkillTree : MonoBehaviour
 
     public bool fixedUpdateOnce = true;
 
+    public Menu menu;
+
     private void FixedUpdate()
     {
+        menu = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Menu>();
         if (fixedUpdateOnce)
         {
             if(skillPanel.activeSelf)
@@ -99,16 +102,15 @@ public class SkillTree : MonoBehaviour
                 fixedUpdateOnce = false;
             }
         }
-        if(skillPanel.activeSelf) UpdateAllSkillsUI();
+        if (menu.skillTreeActive)
+        {
+            UpdateAllSkillsUI();
+            menu.skillTreeActive = false;
+        }
     }
 
     public void UpdateAllSkillsUI()
     {
-        foreach (Skill skill in skillList)
-        {
-            skill.UpdateUI();
-        };
-        GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>().UpdateMiniGames();
         if (PlayerPrefs.GetInt("LocaleKey", 0) == 0)
         {
             skillsName = new string[] {
@@ -129,7 +131,7 @@ public class SkillTree : MonoBehaviour
                     "Psycho. tests to detect deception"
                     };
         }
-        else if (PlayerPrefs.GetInt("LocaleKey", 0) == 1)
+        else
         {
             skillsName = new string[] {
                     "Протикрадіжні двері",
@@ -149,5 +151,10 @@ public class SkillTree : MonoBehaviour
                     "Психо. тести на виявлення обману"
                     };
         }
+        foreach (Skill skill in skillList)
+        {
+            skill.UpdateUI();
+        };
+        GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>().UpdateMiniGames(); 
     }
 }

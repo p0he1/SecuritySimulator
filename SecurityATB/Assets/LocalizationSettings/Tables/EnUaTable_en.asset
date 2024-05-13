@@ -78,6 +78,14 @@ MonoBehaviour:
     m_Localized: Start!
     m_Metadata:
       m_Items: []
+  - m_Id: 3103327373250560
+    m_Localized: Click!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3104765092581376
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

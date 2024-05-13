@@ -17,6 +17,7 @@ public class DialogueManager : MonoBehaviour
     public GameObject[] choices;
     public TextMeshProUGUI[] choicesText;
     public bool choisesActive;
+    public GameObject joystick;
 
     private void Awake()
     {
@@ -60,6 +61,7 @@ public class DialogueManager : MonoBehaviour
         currentStory = new Story(InkJSON.text);
         dialogueIsPlaying = true;
         dialoguePanel.SetActive(true);
+        joystick.SetActive(false);
         dialogueText.text = currentStory.Continue();
         foreach(GameObject choice in choices)
         {
@@ -67,10 +69,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private IEnumerator ExitDialogueMode()
+    public IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
         dialogueIsPlaying = false;
+        joystick.SetActive(true);
         dialoguePanel.SetActive(false);
     }
 
@@ -113,7 +116,7 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(SelectFirstChoise());
     }
 
-    private IEnumerator SelectFirstChoise()
+    public IEnumerator SelectFirstChoise()
     {
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();

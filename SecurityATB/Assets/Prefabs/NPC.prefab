@@ -352,6 +352,7 @@ MonoBehaviour:
   chanseForRobberOnCams: 0
   chanseForWrongCard: 0
   canMove: 1
+  shadow: {fileID: 8332535202209783187}
   whichSprite: 0
   dialogueJustNow: 0
   playerInRange: 0
