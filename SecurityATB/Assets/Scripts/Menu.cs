@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class Menu : MonoBehaviour
 {
@@ -16,12 +18,27 @@ public class Menu : MonoBehaviour
 
     public bool skillTreeActive;
 
+    [SerializeField] AudioListener playerEar;
+    public Toggle soundToggle;
+    public bool isSoundOn;
 
     private void Start()
     {
+        if (PlayerPrefs.GetInt("isSoundOn", 1) == 1)
+        {
+            AudioListener.pause = false;
+            soundToggle.isOn = true;
+        }
+        else
+        {
+            AudioListener.pause = true;
+            soundToggle.isOn = false;
+        }
         queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
         moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
     }
+
+    private void FixedUpdate() => soundToggle.onValueChanged.AddListener(delegate { ToggleClicked(); });
 
     public void Settings()
     {
@@ -34,31 +51,6 @@ public class Menu : MonoBehaviour
         queueManager.canTimer = false;
         setPanel.SetActive(true);
         joystick.SetActive(false);
-        /*if(!setPanel.activeSelf)
-        {
-            foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
-            {
-                npc.GetComponent<NPC>().canMove = false;
-                npc.GetComponent<NPC>().isTimeOn = false;
-            }
-            spawn.canTimer = false;
-            queueManager.canTimer = false;
-            setPanel.SetActive(true);
-            joystick.SetActive(false);
-        }
-        else
-        {
-            foreach(GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
-            {
-                npc.GetComponent<NPC>().canMove = true;
-                npc.GetComponent<NPC>().isTimeOn = true;
-            }
-            //npc.speed = 0.05f;
-            spawn.canTimer = true;
-            queueManager.canTimer = true;
-            setPanel.SetActive(false);
-            joystick.SetActive(true);
-        }*/
     }
 
     public void CloseSettings()
@@ -77,6 +69,7 @@ public class Menu : MonoBehaviour
 
     public void Shop()
     {
+
         if (setPanel.activeSelf) return;
         foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
         {
@@ -122,5 +115,17 @@ public class Menu : MonoBehaviour
     {
         PlayerMove.player.SavePlayer();
         PlayerPrefs.SetInt("money", moneyCount.numberUAH);
+    }
+
+    /*public void TurnOffSound(bool variable)
+    {
+        AudioListener.pause = variable;
+    }*/
+
+    public void ToggleClicked()
+    {
+        //isSoundOn = soundToggle.isOn;
+        AudioListener.pause = !soundToggle.isOn;
+        PlayerPrefs.SetInt("isSoundOn", soundToggle.isOn ? 1 : 0);
     }
 }

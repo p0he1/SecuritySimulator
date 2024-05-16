@@ -14,9 +14,17 @@ public class QueueManager : MonoBehaviour
     private float timer1, timer2;
     public bool canTimer;
 
+    private AudioSource cashRegisterVoice;
+    public AudioClip beep;
+    public bool beepOnce;
+    public float timerForBeep;
+
     private void Start()
     {
+        beepOnce = true;
+        timerForBeep = UnityEngine.Random.Range(2, 5);
         timer1 = timer2 = UnityEngine.Random.Range(5, 9);
+        cashRegisterVoice = GetComponent<AudioSource>();
         Vector2 firstPlace = new Vector2(-2.9f, -1.2f);
         Vector2 secondPlace = new Vector2(0.33f, -1.2f);
         //firstPlace.x int queue -1 becouse in loop we already make it +1
@@ -50,6 +58,15 @@ public class QueueManager : MonoBehaviour
             timer2 = UnityEngine.Random.Range(5, 9);
         }
         //==========================================
+
+        //=========beep sound================
+        if(npcQueue1.Count !=0 | npcQueue2.Count != 0 && canTimer) timerForBeep -= Time.deltaTime;
+        if (timerForBeep<=0)
+        {
+            cashRegisterVoice.PlayOneShot(beep);
+            timerForBeep = UnityEngine.Random.Range(2, 5);
+        }
+        //==================================
     }
 
     public int Enqueue(NPC npc)

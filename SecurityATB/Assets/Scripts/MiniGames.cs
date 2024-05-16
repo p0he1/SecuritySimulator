@@ -38,8 +38,14 @@ public class MiniGames : MonoBehaviour
 
     private moneyCounter MoneyCounter;
 
+    private AudioSource radioVoice;
+    public AudioClip radioTurnOn;
+    public bool radioPlay;
+
     private void Start()
     {
+        radioPlay = true;
+        radioVoice = GetComponent<AudioSource>();
         MoneyCounter = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
         foreach (GameObject clock in timersFill) clock.SetActive(false);
         constForRandom = true;
@@ -70,6 +76,17 @@ public class MiniGames : MonoBehaviour
     private void FixedUpdate()
     {
         //===thief from cameras==
+        if (warningThiefOnCams)
+        {
+            radioVisalCue.SetActive(true);
+            if(radioPlay) radioVoice.PlayOneShot(radioTurnOn);
+            radioPlay = false;
+        }
+        else
+        {
+            radioVisalCue.SetActive(false);
+        }
+
         if (newTimer)
         {
             timer = UnityEngine.Random.Range(2, 3);
@@ -82,9 +99,8 @@ public class MiniGames : MonoBehaviour
             newTimer = true;
             warningThiefOnCams = false;
             canTimer = false;
-        }
-        if(warningThiefOnCams) radioVisalCue.SetActive(true);
-        else radioVisalCue.SetActive(false);
+            radioPlay = true;
+        }      
         //=======================
 
         //==cash alarm===========

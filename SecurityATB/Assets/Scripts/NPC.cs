@@ -69,6 +69,10 @@ public class NPC : MonoBehaviour
     private bool isArrest;
     private Animator dog;
 
+    private AudioSource npcVoice;
+    public AudioClip alarm;
+    public bool playAlarmOnce;
+
     private void Start()
     {
         talkOnlyOnce = true;
@@ -77,12 +81,14 @@ public class NPC : MonoBehaviour
         canTimerMD = false;
         playerInRange = false;
         isTimeOn = true;
+        playAlarmOnce = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
         queueManager = GameObject.FindGameObjectWithTag("Queue Manager").GetComponent<QueueManager>();
         dialogueManager = GameObject.FindGameObjectWithTag("Canvas").GetComponent<DialogueManager>();
         moneyCount = GameObject.FindGameObjectWithTag("moneyCounter").GetComponent<moneyCounter>();
         miniGames = GameObject.FindGameObjectWithTag("Minigame Manager").GetComponent<MiniGames>();
         npcSpawn = GameObject.FindGameObjectWithTag("NPC start").GetComponent<NPCSpawnPoint>();
+        npcVoice = GetComponent<AudioSource>();
 
         stopOrNotStop = UnityEngine.Random.Range(1, 5 + 1);
         cr1or2 = UnityEngine.Random.Range(1, 2 + 1);
@@ -149,9 +155,14 @@ public class NPC : MonoBehaviour
                 canMove = false;
                 if (stopTimerCR <= 0)
                 {
-                    if(typeOfClient == TypeOfClient.withWrongCard)
+                    if (typeOfClient == TypeOfClient.withWrongCard)
                     {
                         redVisualCue.SetActive(true);
+                        if (playAlarmOnce)
+                        {
+                            npcVoice.PlayOneShot(alarm);
+                            playAlarmOnce = false;
+                        }
                     }
                     else
                     {
@@ -416,6 +427,7 @@ public class NPC : MonoBehaviour
             if (collision.gameObject.tag == "Exit")
             {
                 canTimerMD = true;
+                npcVoice.PlayOneShot(alarm);
             }
 
             if (collision.gameObject.tag == "Player" && !canMove)
