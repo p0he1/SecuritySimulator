@@ -11,6 +11,7 @@ public class Menu : MonoBehaviour
     public GameObject skillPanel;
     public GameObject deleteAllPanel;
     private moneyCounter moneyCount;
+    public GameObject adPanel;
 
     public NPCSpawnPoint spawn;
     private QueueManager queueManager;
@@ -39,7 +40,8 @@ public class Menu : MonoBehaviour
     }
 
     private void FixedUpdate() => soundToggle.onValueChanged.AddListener(delegate { ToggleClicked(); });
-
+    
+    //Settings
     public void Settings()
     {
         foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
@@ -66,7 +68,9 @@ public class Menu : MonoBehaviour
         setPanel.SetActive(false);
         joystick.SetActive(true);
     }
+    //=============
 
+    //Shop
     public void Shop()
     {
 
@@ -94,6 +98,7 @@ public class Menu : MonoBehaviour
         skillPanel.SetActive(false);
         joystick.SetActive(true);
     }
+    //==================
 
     public void deleteAllChoisePanel()
     {
@@ -111,16 +116,38 @@ public class Menu : MonoBehaviour
         deleteAllPanel.SetActive(false);
     }
 
+    public void adPanelOpen()
+    {
+        foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
+        {
+            npc.GetComponent<NPC>().canMove = false;
+            npc.GetComponent<NPC>().isTimeOn = false;
+        }
+        spawn.canTimer = false;
+        queueManager.canTimer = false;
+        adPanel.SetActive(true);
+        joystick.SetActive(false);
+    }
+
+    public void adPanelClose()
+    {
+        foreach (GameObject npc in GameObject.FindGameObjectsWithTag("NPC"))
+        {
+            npc.GetComponent<NPC>().canMove = true;
+            npc.GetComponent<NPC>().isTimeOn = true;
+        }
+        //npc.speed = 0.05f;
+        spawn.canTimer = true;
+        queueManager.canTimer = true;
+        adPanel.SetActive(false);
+        joystick.SetActive(true);
+    }
+
     private void OnApplicationQuit()
     {
         PlayerMove.player.SavePlayer();
         PlayerPrefs.SetInt("money", moneyCount.numberUAH);
     }
-
-    /*public void TurnOffSound(bool variable)
-    {
-        AudioListener.pause = variable;
-    }*/
 
     public void ToggleClicked()
     {
