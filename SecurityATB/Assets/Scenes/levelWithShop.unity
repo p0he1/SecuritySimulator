@@ -9642,6 +9642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8359fd2f09890840a151d2ea19446ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  androidUnitID: Rewarded_Android
   androidID: 5620327
   adButton: {fileID: 172456339}
 --- !u!1 &1291276407
